@@ -1,18 +1,36 @@
-name: Upload dotnet package
+name: Release
 
 on:
   release:
-    types: [push]
+    types: [created]
 
 jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    permissions:
-      packages: write
-      contents: read
+  build:
+    runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '4.8.x' # SDK Version to use.
-      - run: dotnet build --configuration Release
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Build Projects
+      run: dotnet build -c release
+    - name: Create Release Directory
+      run: |
+        mkdir Release
+        copy bin/Release/HacknetPluginTemplate.dll Release/
+    
+    - name: Create Release ZIP
+      uses: TheDoctor0/zip-release@0.6.0
+      with:
+        type: 'zip'
+        filename: 'Mod.Release.zip'
+        directory: 'Release'
+    
+    - name: Publish Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          Release/Mod.Release.zip
+    
