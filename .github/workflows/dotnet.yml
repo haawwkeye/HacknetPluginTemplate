@@ -15,4 +15,4 @@ jobs:
       - uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '3.1.x' # SDK Version to use.
-      - run: dotnet build --configuration Release <my project>
+      - run: dotnet build --configuration Release HacknetPlugin
